@@ -2,6 +2,7 @@ package com.file.poller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,9 +91,9 @@ public class ReadWriteExcelFile {
 			DataFormatter dataFormatter = new DataFormatter();
 			List<Object> uniqueCellValuesList = new ArrayList<>();
 			Set<Object> uniqueCellValuesSet = new HashSet<Object>();
-			
+
 			Thread.sleep(threadSleepTime);
-			
+
 			InputStream file = new FileInputStream(new File(readPath));
 			XSSFWorkbook workbook = new XSSFWorkbook(file);
 			XSSFSheet sheet = workbook.getSheet(fileSheet);
@@ -103,17 +104,17 @@ public class ReadWriteExcelFile {
 				if (row.getRowNum() == 0)
 					continue;
 				uniqueCellValuesSet.add(row.getCell(0).toString());
-				//System.out.println("cell value: " + row.getCell(0));
+				// System.out.println("cell value: " + row.getCell(0));
 				Iterator<Cell> cellIterator = row.cellIterator();
 				while (cellIterator.hasNext()) {
 					Cell cell = cellIterator.next();
 					switch (cell.getCellTypeEnum()) {
 					case NUMERIC:
-						//System.out.print(cell.getNumericCellValue() + "\t\t");
+						// System.out.print(cell.getNumericCellValue() + "\t\t");
 						eachRow.add(cell.getNumericCellValue());
 						break;
 					case STRING:
-						//System.out.print(cell.getStringCellValue() + "\t\t");
+						// System.out.print(cell.getStringCellValue() + "\t\t");
 						eachRow.add(cell.getStringCellValue());
 						break;
 					case _NONE:
@@ -122,7 +123,7 @@ public class ReadWriteExcelFile {
 						break;
 					}
 				}
-				//System.out.println("");
+				// System.out.println("");
 				map.put(row.getCell(0).toString(), eachRow);
 			}
 			uniqueCellValuesList.addAll(uniqueCellValuesSet);
@@ -133,9 +134,38 @@ public class ReadWriteExcelFile {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//System.out.println("-----------------Printing Map Values-----------------");
-		//System.out.println(map);
+		// System.out.println("-----------------Printing Map Values-----------------");
+		// System.out.println(map);
 		return map;
 	}
 
+	public void readInputStream(InputStream stream, String assesmentType) throws IOException {
+		XSSFWorkbook workbook = new XSSFWorkbook(stream);
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+			System.out.println(workbook.getSheetName(i));
+		}
+		XSSFSheet sheet = workbook.getSheetAt(0);
+		
+		Iterator<Row> rowIterator = sheet.iterator();
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.next();
+			Iterator<Cell> cellIterator = row.cellIterator();
+			while (cellIterator.hasNext()) {
+				Cell cell = cellIterator.next();
+				switch (cell.getCellTypeEnum()) {
+				case NUMERIC:
+					System.out.print(cell.getNumericCellValue() + "\t\t");
+					break;
+				case STRING:
+					System.out.print(cell.getStringCellValue() + "\t\t");
+					break;
+				case _NONE:
+					break;
+				default:
+					break;
+				}
+			}
+			System.out.println("");
+		}
+	}
 }
