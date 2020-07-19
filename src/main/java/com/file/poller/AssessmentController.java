@@ -49,7 +49,8 @@ public class AssessmentController {
 
 	@Value("${upload.url}")
 	private String uploadUrl;
-
+	
+	
 	@GetMapping("/greet")
 	public String getGreet() {
 		return "welcome";
@@ -108,7 +109,13 @@ public class AssessmentController {
 				entitybuilder.addTextBody("assessmentType", assessmentType);
 				HttpEntity mutiPartHttpEntity = entitybuilder.build();
 
-				RequestBuilder reqbuilder = RequestBuilder.post(uploadUrl);
+				RequestBuilder reqbuilder = null;
+				
+				if("suitability".equals(assessmentType)) {
+					reqbuilder = RequestBuilder.post(uploadUrl+"suitabilityAssessment?");
+				}else if("TechnicalFitness".equals(assessmentType)){
+					reqbuilder = RequestBuilder.post(uploadUrl+"technicalFitnessAssessment?");
+				}				
 
 				reqbuilder.setEntity(mutiPartHttpEntity);
 				HttpUriRequest multipartRequest = reqbuilder.build();
